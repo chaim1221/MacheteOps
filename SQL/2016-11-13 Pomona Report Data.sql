@@ -15,12 +15,7 @@
 select
     wsi.dwccardnum as wsiCardNumber
   , convert(date,wsi.dateforsignin) as wsiDate
-  , wsi.workerId as wsiWorkerId
-  --, wsi.Id as wsiId
-  , assigned.waId
-  --, assigned.waWorkerId
-  --, assigned.waWsiId
-  , assigned.waWage
+  , cast(assigned.waWage as money) as waWage
   , assigned.waHours
   , personsLookups.text_EN as gender
   , workersLookups.text_EN as ethnicity
