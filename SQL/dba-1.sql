@@ -1,0 +1,30 @@
+use [master]
+GO
+
+CREATE DATABASE [DBA]
+  CONTAINMENT = NONE
+  ON PRIMARY
+(
+    NAME = N'DBA', FILENAME = N'D:\SQLData\DBA.mdf'
+  , SIZE = 10MB
+  , MAXSIZE = UNLIMITED
+  , FILEGROWTH = 1024KB
+)
+LOG 
+  ON
+(
+    NAME = N'DBA_log'
+  , FILENAME = N'D:\SQLData\DBA.ldf'
+  , SIZE = 10240KB
+  , MAXSIZE = 2048GB
+  , FILEGROWTH = 10%
+)
+
+USE DBA
+GO
+
+CREATE TABLE DatabaseServers
+(
+  
+)
+
