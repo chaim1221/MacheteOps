@@ -1,12 +1,16 @@
+<#
+ .NOTES
+   visit https://docs.microsoft.com/en-in/azure/backup/backup-azure-vms-first-look-arm
+   this script sort of assumes you've run the agent MSI yourself,
+   AND that you've dropped the file you got from running
+   Get-AzurePublishSettingsFile in this directory."
+ #>
 param (
   [Parameter(Mandatory=$true)]
   [string]$vmName,
   [Parameter(Mandatory=$true)]
   [string]$publishSettingsFile
 )
-write-host "this script sort of assumes you've run the agent MSI yourself," -f yellow -b black
-write-host "AND that you've dropped the file you got from running" -f yellow -b black
-write-host "Get-AzurePublishSettingsFile in this directory." -f yellow -b black
 
 push-location
 Import-AzurePublishSettingsFile $publishSettingsFile
