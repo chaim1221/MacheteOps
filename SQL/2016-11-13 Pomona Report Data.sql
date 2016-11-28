@@ -20,7 +20,12 @@ select
   , personsLookups.text_EN as gender
   , workersLookups.text_EN as ethnicity
   , convert(date,w.dateofbirth) as dob
-  , w.englishLevelId
+  , case w.englishLevelId
+      when 0 then 'None'
+      when 1 then 'Basic'
+      when 2 then 'Conversational'
+      when 3 then 'Fluent'
+    end as englishLevel
   , convert(date,w.dateInUsa) as dateImmigrated
   , convert(date,w.dateofmembership) as dateJoined
   from dbo.WorkerSignins wsi
