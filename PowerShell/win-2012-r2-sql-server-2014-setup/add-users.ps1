@@ -17,9 +17,12 @@ NET USER pomona_user "@Password1" /ADD /Y
 write-host "OK" -f green
 
 # GROUPS
-write-host "Adding users to groups..."
+write-host "Adding groups and members..."
 NET LOCALGROUP "Administrators" "machete" /ADD
 NET LOCALGROUP "Administrators" "machete_sqlserver" /ADD
+NET LOCALGROUP "SSRS_USERS" /ADD
+NET LOCALGROUP "SSRS_USERS" "casa_user" /ADD
+NET LOCALGROUP "SSRS_USERS" "mtnview_user" /ADD
+NET LOCALGROUP "SSRS_USERS" "graton_user" /ADD
+NET LOCALGROUP "SSRS_USERS" "pomona_user" /ADD
 write-host "OK" -f green
-
-
