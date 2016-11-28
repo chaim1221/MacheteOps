@@ -2,7 +2,7 @@ write-host "Configuring chocolatey packages..."
 if ($?) { choco install -y chromium }
 if ($?) { choco install -y git }
 if ($?) { choco install -y nano }
-
+if ($?) { choco install -y dotnet3.5 } # req for sql svr
 # TODO
 # if ($?) { choco install mssqlserver2014express } 
 # problem is we do not know if it contains the 
