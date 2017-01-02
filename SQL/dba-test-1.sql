@@ -40,9 +40,8 @@ INSERT INTO [DBA].[dbo].[Center] (
 )
 
 PRINT 'DELETING MACHETECONMAPPING RECORD'
-DELETE FROM DBA.dbo.MacheteConMapping --WHERE MacheteConMappingID = @ROWID
-                                      -- put this back for just the test
-									  -- I'm troubleshooting
+DELETE FROM DBA.dbo.MacheteConMapping WHERE MacheteConMappingID = @ROWID
+
 IF (SELECT 1 FROM DBA.dbo.Center WHERE ID = 1) = 1
   RAISERROR (N'GO BACK AND FIX YOUR SQL CODE', 0, 1)
 ELSE
