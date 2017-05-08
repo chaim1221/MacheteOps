@@ -16,5 +16,6 @@ push-location
 Import-AzurePublishSettingsFile $publishSettingsFile
 Select-AzureSubscription -SubscriptionId "e89e34ab-4cb2-40e7-b374-5ec0a4b9c57d" -Default
 $vm = get-azurevm -ServiceName $key -Name $key
+$vm.VM.ProvisionGuestAgent = $true
 Update-AzureVM -Name $vm.Name -VM $vm.VM -ServiceName $vm.ServiceName
 Get-AzureVM -ServiceName $key -Name $key
