@@ -66,28 +66,51 @@ select id, active, text_en, text_es, selected, dateupdated, updatedby from dbo.L
 
 --update any workers that should still be using the original values; i.e., those which haven't been updated since Jan. 1
 ;with cte as (
-  select id from dbo.Workers where dateupdated < '2017-01-01'
+  select id from dbo.Workers where dateupdated < convert(datetime, '2017-01-01', 111)
 )
-
 --should include 17, 18, 19, and 84
-select distinct w.incomeid, count(*) from dbo.workers w
+select w.incomeid, count(w.id) as numberOfWorkers
+from dbo.workers w
 inner join cte on cte.id = w.id
 --              and cte.income
 group by w.incomeid
 
-update dbo.workers w inner join cte on cte.id = w.id
-set incomeid = 367 where incomeid = 17
+;with cte as (
+  select id from dbo.Workers where dateupdated < convert(datetime, '2017-01-01', 111) and incomeid = 17
+)
+update w
+set incomeid = 367 
+from dbo.workers w inner join cte on cte.id = w.id
+where incomeid = 17
 
-update dbo.workers w inner join cte on cte.id = w.id
-set incomeid = 368 where incomeid = 18
+;with cte as (
+  select id from dbo.Workers where dateupdated < convert(datetime, '2017-01-01', 111) and incomeid = 18
+)
+update w
+set incomeid = 368 
+from dbo.workers as w inner join cte on cte.id = w.id
+where incomeid = 18
 
-update dbo.workers w inner join cte on cte.id = w.id
-set incomeid = 369 where incomeid = 19
+;with cte as (
+  select id from dbo.Workers where dateupdated < convert(datetime, '2017-01-01', 111) and incomeid = 19
+)
+update w
+set incomeid = 369 
+from dbo.workers as w inner join cte on cte.id = w.id
+where incomeid = 19
 
-update dbo.workers w inner join cte on cte.id = w.id
-set incomeid = 370 where incomeid = 84
+;with cte as (
+  select id from dbo.Workers where dateupdated < convert(datetime, '2017-01-01', 111) and incomeid = 84
+)
+update w
+set incomeid = 370 
+from dbo.workers as w inner join cte on cte.id = w.id
+where incomeid = 84
 
 --should NOT include 17, 18, 19, and 84
+;with cte as (
+  select id from dbo.Workers where dateupdated < convert(datetime, '2017-01-01', 111)
+)
 select distinct w.incomeid, count(*) from dbo.workers w
 inner join cte on cte.id = w.id
 --              and cte.income
