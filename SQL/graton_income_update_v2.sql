@@ -61,7 +61,7 @@ VALUES
 ('income', 'Low, $28,950 to $34,740', 'Bajo, de $25,000 a $34,740', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, GETDATE(), GETDATE(), 'Chaim Eliyah', 'Chaim Eliyah', NULL, NULL, NULL, NULL, NULL, 1),
 ('income', 'Moderate, $34,740-$46,150', 'Moderado, de $34,740 a $46,150', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, NULL, GETDATE(), GETDATE(), 'Chaim Eliyah', 'Chaim Eliyah', NULL, NULL, NULL, NULL, NULL, 1)
 
---get active incomes
+--get incomes
 select id, active, text_en, text_es, selected, dateupdated, updatedby from dbo.Lookups where category = 'income'
 
 --update any workers that should still be using the original values; i.e., those which haven't been updated since Jan. 1
