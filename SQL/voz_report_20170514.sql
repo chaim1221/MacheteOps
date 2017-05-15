@@ -34,7 +34,7 @@
 --  FROM [dbo].[WorkAssignments]
 
 declare @startDate as datetime = '2017-01-01 00:00:00.000'
-declare @endDate as datetime = getdate()
+declare @endDate as datetime = GETDATE()--'2016-12-31 23:59:59.999'
 
 --drop table #tt
 create table #tt
@@ -88,13 +88,13 @@ insert into #lookupsTemp
   , case when [3] is NULL then 0 else [3] end as 'March'
   , case when [4] is NULL then 0 else [4] end as 'April'
   , case when [5] is NULL then 0 else [5] end as 'May'
-  , 0 as 'June'
-  , 0 as 'July'
-  , 0 as 'August'
-  , 0 as 'September'
-  , 0 as 'October'
-  , 0 as 'November'
-  , 0 as 'December'
+  , case when [6] is NULL then 0 else [6] end as 'June'
+  , case when [7] is NULL then 0 else [7] end as 'July'
+  , case when [8] is NULL then 0 else [8] end as 'August'
+  , case when [9] is NULL then 0 else [9] end as 'September'
+  , case when [10] is NULL then 0 else [10] end as 'October'
+  , case when [11] is NULL then 0 else [11] end as 'November'
+  , case when [12] is NULL then 0 else [12] end as 'December'
   from (
     select [SkillID],[Skill],[Month],[Count]
     from #tt
@@ -102,7 +102,7 @@ insert into #lookupsTemp
   pivot
   (
     sum([Count])
-    for [Month] in ([1], [2], [3], [4], [5])
+    for [Month] in ([1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12])
   ) piv;
 
 --select * from #lookupsTemp
