@@ -33,8 +33,8 @@
 --      ,[maxEarnings]
 --  FROM [dbo].[WorkAssignments]
 
-declare @startDate as datetime = '2017-01-01 00:00:00.000'
-declare @endDate as datetime = GETDATE()--'2016-12-31 23:59:59.999'
+declare @startDate as datetime = '2016-01-01 00:00:00.000'
+declare @endDate as datetime = '2016-12-31 23:59:59.999'
 
 --drop table #tt
 create table #tt
