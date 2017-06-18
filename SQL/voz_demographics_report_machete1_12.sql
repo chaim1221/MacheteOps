@@ -14,59 +14,38 @@
 -- instead.
 --
 /******                                                            ******/
+delete from dbo.reportdefinitions where id=32
+dbcc checkident('reportdefinitions',reseed,31)
 
 declare @name nvarchar(max) = N'VozDemographicsReport'
-declare @commonName nvarchar(max) = N'Voz Demographics Report (5/14/2017)'
+declare @commonName nvarchar(max) = N'Voz Demographics Report'
 declare @title nvarchar(max) = NULL
 declare @description nvarchar(max) = N'Enumerates the skills values from the lookup table. For each, does a count by month of dispatches for that skill. Totals and adds select of how many workers have that skill. Created 5/14/2017'
+
+--declare @beginDate datetime = ''2017-01-01T00:00:00''
+--declare @endDate datetime = GETDATE()
 declare @sqlquery nvarchar(max) = N'
---declare @startDate as datetime = ''2016-01-01 00:00:00.000''
---declare @endDate as datetime = ''2016-12-31 23:59:59.999''
-
---drop table #tt
-create table #tt
-(
-  [SkillID] int,
-  [Skill] nvarchar(50),
-  [Month] int,
-  [Count] int
-);
-
-insert into #tt
-  select 
-    skillID as ''SkillID''
-  , text_EN as ''Skill''
-  , datepart(month, dateTimeOfWork) as ''Month''
-  , count(*) as ''Count''
-  from dbo.workAssignments A
-  join dbo.workOrders O on A.workOrderID = O.ID
-  join dbo.Lookups L on A.skillID = L.ID
-  where dateTimeOfWork >= @beginDate
-    and dateTimeOfWork <= @endDate
-  group by text_EN, skillID, datepart(month,dateTimeOfWork)
-  order by datepart(month,dateTimeOfWork)
-
---select * from #tt
-
---drop table #lookupsTemp
-create table #lookupsTemp (
-  [SkillID] int,
-  [Skill] varchar(50),
-  [January] int,
-  [February] int,
-  [March] int,
-  [April] int,
-  [May] int,
-  [June] int,
-  [July] int,
-  [August] int,
-  [September] int,
-  [October] int,
-  [November] int,
-  [December] int
-)
-
-insert into #lookupsTemp
+select
+  convert(varchar(50), L.Skill) as ''Job Title''
+, cast(A.SkillID as int) as ''ID''
+, cast(January   as int) as ''January''
+, cast(February  as int) as ''February''
+, cast(March     as int) as ''March''
+, cast(April     as int) as ''April''
+, cast(May       as int) as ''May''
+, cast(June      as int) as ''June''
+, cast(July      as int) as ''July''
+, cast(August    as int) as ''August''
+, cast(September as int) as ''September''
+, cast(October   as int) as ''October''
+, cast(November  as int) as ''November''
+, cast(December  as int) as ''December''
+, cast(count(*)  as int) as ''Total This Year''
+, cast(convert(decimal(16,2), avg(hourlyWage)) as float) as ''Average Wage''
+, case when SkillCount is null then 0 else SkillCount end as ''Number of Workers With Skill''
+from dbo.WorkAssignments A
+join [dbo].[WorkOrders] W on A.workOrderID = W.ID 
+join (
   select --*
     [SkillID]
   , [Skill]
@@ -83,22 +62,26 @@ insert into #lookupsTemp
   , case when [11] is NULL then 0 else [11] end as ''November''
   , case when [12] is NULL then 0 else [12] end as ''December''
   from (
-    select [SkillID],[Skill],[Month],[Count]
-    from #tt
+      select 
+          skillID as ''SkillID''
+        , text_EN as ''Skill''
+        , datepart(month, dateTimeOfWork) as ''Month''
+        , count(*) as ''Count''
+        from dbo.workAssignments A
+        join dbo.workOrders O on A.workOrderID = O.ID
+        join dbo.Lookups L on A.skillID = L.ID
+        where dateTimeOfWork >= @beginDate
+          and dateTimeOfWork <= @endDate
+        group by text_EN, skillID, datepart(month,dateTimeOfWork)
+        --order by datepart(month,dateTimeOfWork)
   ) src
   pivot
   (
     sum([Count])
     for [Month] in ([1], [2], [3], [4], [5], [6], [7], [8], [9], [10], [11], [12])
-  ) piv;
-
---select * from #lookupsTemp
-
---select count(*) from dbo.workers where skill1 = 65 
---select count(*) from dbo.workers where skill2 = 65
---select count(*) from dbo.workers where skill3 = 65
---select count(*) from dbo.workers where skill1 = 65 or skill2 = 65 or skill3 = 65
-;with cte as (
+  ) piv
+) L on A.skillID = L.SkillID
+left join (
   select
     L.ID as ''ID''
   , L.text_EN ''English''
@@ -106,53 +89,112 @@ insert into #lookupsTemp
   from dbo.workers W
   join dbo.lookups L on L.ID = W.skill1 or L.ID = W.skill2 or L.ID = W.skill3
   group by L.ID, L.text_EN
-)
-
-select 
-  L.Skill as ''Job Title''
-, A.SkillID as ''ID''
-, January
-, February
-, March
-, April
-, May
-, June
-, July
-, August
-, September
-, October
-, November
-, December
-, count(*) as ''Total This Year''
-, convert(decimal(16,2),avg(hourlyWage)) as ''Average Wage''
-, case when SkillCount is null then 0 else SkillCount end as ''Number of Workers With Skill''
-from dbo.WorkAssignments A
-join [dbo].[WorkOrders] W on A.workOrderID = W.ID 
-join #lookupsTemp L on A.skillID = L.SkillID
-left join cte on A.skillID = cte.ID
-where dateTimeOfWork >= @startDate
+) cte on A.skillID = cte.ID
+where dateTimeOfWork >= @beginDate
   and dateTimeOfWork <= @endDate
 group by  L.Skill, A.SkillID, January, February, March, April, May, June, July, August, September, October, November, December, SkillCount
-order by ''Total This Year'' desc
-
-drop table #tt
-drop table #lookupsTemp
+order by count(*) desc
 '
+--exec(@sqlquery)
+
 declare @category nvarchar(max) = N'Demographics'
 declare @subcategory nvarchar(max) = NULL
-declare @inputsJson nvarchar(max) = N'
-  {
-    "beginDate": true,
-	"beginDateDefault": "2017-01-01T00:00:00",
-	"endDate": true,
-	"endDateDefault": "2017-07-01T00:00:00"
-  }
+declare @inputsJson nvarchar(max) = N'{"beginDate":true,"beginDateDefault":"2016-01-01T00:00:00","endDate":true,"endDateDefault":"2017-01-01T00:00:00","memberNumber":false}'
+declare @columnsJson nvarchar(max)= N'
+  [
+    { 
+      "field": "Job Title",
+      "header": "Job",
+      "visible": true
+    },
+    {
+      "field": "ID",
+      "header": "ID",
+      "visible": false
+    },
+    {
+      "field": "January",
+      "header": "Jan",
+      "visible": true
+    },
+    {
+      "field": "February",
+      "header": "Feb",
+      "visible": true
+    },
+    {
+      "field": "March",
+      "header": "Mar",
+      "visible": true
+    },
+    {
+      "field": "April",
+      "header": "Apr",
+      "visible": true
+    },
+    {
+      "field": "May",
+      "header": "May",
+      "visible": true
+    },
+    {
+      "field": "June",
+      "header": "Jun",
+      "visible": true
+    },
+    {
+      "field": "July",
+      "header": "Jul",
+      "visible": true
+    },
+    {
+      "field": "August",
+      "header": "Aug",
+      "visible": true
+    },
+    {
+      "field": "September",
+      "header": "Sep",
+      "visible": true
+    },
+    {
+      "field": "October",
+      "header": "Oct",
+      "visible": true
+    },
+    {
+      "field": "November",
+      "header": "Nov",
+      "visible": true
+    },
+    {
+      "field": "December",
+      "header": "Dec",
+      "visible": true
+    },
+    {
+      "field": "Total This Year",
+      "header": "Total This Year",
+      "visible": true
+    },
+    {
+      "field": "Average Wage",
+      "header": "Average Wage",
+      "visible": true
+    },
+    {
+      "field": "Number of Workers With Skill",
+      "header": "Workers With Skill",
+      "visible": true
+    }
+  ]
 '
-declare @columnsJson nvarchar(max) = NULL
 declare @dateCreated datetime = GETDATE()
 declare @dateUpdated datetime = GETDATE()
 declare @Createdby nvarchar(30) = 'Chaim Eliyah'
 declare @Updatedby nvarchar(30) = 'Chaim Eliyah'
+
+
 
 -------------------------------------------------
 BEGIN TRANSACTION
@@ -174,21 +216,21 @@ INSERT INTO [dbo].[ReportDefinitions] (
 )
 VALUES (
        @name
-	  ,@commonName
-	  ,@title
-	  ,@description
-	  ,@sqlquery
-	  ,@category
-	  ,@subcategory
-	  ,@inputsJson
-	  ,@columnsJson
-	  ,@datecreated
-	  ,@dateupdated
-	  ,@Createdby
-	  ,@Updatedby
+      ,@commonName
+      ,@title
+      ,@description
+      ,@sqlquery
+      ,@category
+      ,@subcategory
+      ,@inputsJson
+      ,@columnsJson
+      ,@datecreated
+      ,@dateupdated
+      ,@Createdby
+      ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
