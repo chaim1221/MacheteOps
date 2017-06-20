@@ -11,14 +11,16 @@
 
 --delete from dbo.reportdefinitions where id=32
 --dbcc checkident('reportdefinitions',reseed,31)
+-- test values
+declare @beginDate datetime = ''2017-01-01T00:00:00''
+declare @endDate datetime = GETDATE()
 
 declare @name nvarchar(max) = N'VozDemographicsReport'
 declare @commonName nvarchar(max) = N'Voz Demographics Report'
 declare @title nvarchar(max) = NULL
 declare @description nvarchar(max) = N'Enumerates the skills values from the lookup table. For each, does a count by month of dispatches for that skill. Totals and adds select of how many workers have that skill. Created 5/14/2017'
 
---declare @beginDate datetime = ''2017-01-01T00:00:00''
---declare @endDate datetime = GETDATE()
+-- the query. must cast types. NVARCHAR, DECIMAL not accepted!
 declare @sqlquery nvarchar(max) = N'
 select
   convert(varchar(50), L.Skill) as ''Job Title''
