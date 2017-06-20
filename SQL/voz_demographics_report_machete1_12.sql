@@ -7,10 +7,10 @@
 -- databases. This script does that for one report. It can be reused to  |
 -- generate other reports in the same fashion.                           |
 --                                                                       |
-/******                                             opsCard 2 (tm) ******/
+\******                                             opsCard 2 (tm) ******/
 
-delete from dbo.reportdefinitions where id=32
-dbcc checkident('reportdefinitions',reseed,31)
+--delete from dbo.reportdefinitions where id=32
+--dbcc checkident('reportdefinitions',reseed,31)
 
 declare @name nvarchar(max) = N'VozDemographicsReport'
 declare @commonName nvarchar(max) = N'Voz Demographics Report'
@@ -90,11 +90,15 @@ where dateTimeOfWork >= @beginDate
 group by  L.Skill, A.SkillID, January, February, March, April, May, June, July, August, September, October, November, December, SkillCount
 order by count(*) desc
 '
---exec(@sqlquery)
+exec sp_executesql @sqlquery, N'@beginDate datetime, @endDate datetime', @beginDate, @endDate
 
 declare @category nvarchar(max) = N'Demographics'
 declare @subcategory nvarchar(max) = NULL
+--test values for the web; don't touch
 declare @inputsJson nvarchar(max) = N'{"beginDate":true,"beginDateDefault":"2016-01-01T00:00:00","endDate":true,"endDateDefault":"2017-01-01T00:00:00","memberNumber":false}'
+
+-- single JSON array with three properties, "field" (string), "header" (string), and "visible" (bool)
+-- "field" entries must be exact, "header" can vary
 declare @columnsJson nvarchar(max)= N'
   [
     { 
@@ -224,8 +228,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
---ROLLBACK TRANSACTION
-COMMIT TRANSACTION
+ROLLBACK TRANSACTION
+--COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
