@@ -1,19 +1,14 @@
-/****** Script for INSERT INTO command for MACHETE REPORTS (v1.12) ******/
--- Purpose: To add the Voz Demographics Report to Machete.
--- Author: Chaim Eliyah
--- Synopsis: Since v1.12 includes in-app reporting, we are trying to add
--- the reports that we have been doing for the centers directly to their
--- databases. This script does that for one report. It can be reused to
--- generate other reports in the same fashion.
---
--- NOTE -- 
--- At the time of this writing, the program does not restrict what types
--- of queries can be made via the ReportDefinitions table. This is evident
--- in the use of temp tables. If temp table functions such as DROP are
--- restricted in the future, we may have to create views to do the job
--- instead.
---
-/******                                                            ******/
+  ______________________________/ voz_demographics_report_machete1_12.sql\
+/****** Script for INSERT INTO command for MACHETE REPORTS (v1.12) ******|
+-- Purpose: To add the Voz Demographics Report to Machete.               |
+-- Author: Chaim Eliyah                                                  |
+-- Synopsis: Since v1.12 includes in-app reporting, we are trying to add |
+-- the reports that we have been doing for the centers directly to their |
+-- databases. This script does that for one report. It can be reused to  |
+-- generate other reports in the same fashion.                           |
+--                                                                       |
+/******                                             opsCard 2 (tm) ******/
+
 delete from dbo.reportdefinitions where id=32
 dbcc checkident('reportdefinitions',reseed,31)
 
