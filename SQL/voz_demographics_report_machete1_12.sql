@@ -1,4 +1,4 @@
-  ______________________________/ voz_demographics_report_machete1_12.sql\
+--______________________________/ voz_demographics_report_machete1_12.sql\
 /****** Script for INSERT INTO command for MACHETE REPORTS (v1.12) ******|
 -- Purpose: To add the Voz Demographics Report to Machete.               |
 -- Author: Chaim Eliyah                                                  |
