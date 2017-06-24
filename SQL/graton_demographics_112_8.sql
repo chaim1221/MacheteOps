@@ -16,20 +16,22 @@ declare @endDate datetime = GETDATE()
 declare @name nvarchar(max) = N'WorkersMissingDemographicInformation'
 declare @commonName nvarchar(max) = N'Workers Missing Demographic Information'
 declare @title nvarchar(max) = NULL
-declare @description nvarchar(max) = 'Finds workers with a racid or incomeid of NULL and reports those members'' card numbers to the user'
+declare @description nvarchar(max) = 'Finds workers with a raceid, incomeid or dateOfBirth of NULL and reports those members'' card numbers to the user'
 
 -- the query. must cast types. NVARCHAR, DECIMAL not accepted!
 declare @sqlquery nvarchar(max) = N'
-select 
-  distinct(CAST(w.dwccardnum AS INT)) as [Member ID]
-, CAST(raceid AS INT) as [Race ID]
-, CAST(incomeid AS INT) as [Income ID]
-from workers w
-inner join workersignins wsi on w.id = wsi.workerid
-where wsi.dateforsignin >=  @beginDate and
-wsi.dateforsignin <= @endDate and (
-raceid is null
-or incomeid is null 
+  select 
+    distinct(CAST(w.dwccardnum AS INT)) as [Member ID]
+  , CAST(raceid AS INT) as [Race ID]
+  , CAST(incomeid AS INT) as [Income ID]
+  , CAST(dateOfBirth as DATETIME) as [Date of Birth]
+  from workers w
+  inner join workersignins wsi on w.id = wsi.workerid
+  where wsi.dateforsignin >=  @beginDate and
+  wsi.dateforsignin <= @endDate and (
+  raceid is null
+  or incomeid is null 
+  or dateOfBirth is null
 )
 '
 exec sp_executesql @sqlquery, N'@beginDate datetime, @endDate datetime', @beginDate, @endDate
@@ -57,7 +59,12 @@ declare @columnsJson nvarchar(max)= N'
       "field": "Income ID",
       "header": "Income ID",
       "visible": true
-    }
+    },
+	{
+	  "field": "Date of Birth",
+	  "header": "Date of Birth",
+	  "visible": true
+	}
   ]
 '
 
