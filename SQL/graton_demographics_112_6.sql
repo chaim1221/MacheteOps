@@ -1,23 +1,29 @@
+--__________________________________________/ graton_demographics_8.sql \
+/****** Script for INSERT INTO command for MACHETE REPORTS (v1.12) ******|
+-- Purpose: To add the Voz Demographics Report to Machete.               |
+-- Author: Chaim Eliyah                                                  |
+-- Synopsis: Since v1.12 includes in-app reporting, we are trying to add |
+-- the reports that we have been doing for the centers directly to their |
+-- databases. This script does that for one report. It can be reused to  |
+-- generate other reports in the same fashion.                           |
+--                                                                       |
+\******                                             opsCard 2 (tm) ******/
+
+--delete from dbo.reportdefinitions where id > 33
+--dbcc checkident('reportdefinitions',reseed,33)
 --test values
 declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'GratonDemographicsAgeByStatus'
-declare @commonName nvarchar(max) = N'Graton Demographics: Age by Status'
+declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByRacialCategory'
+declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Racial Category'
 declare @title nvarchar(max) = NULL
-declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by age group.'
+declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by racial category.'
 
 declare @sqlquery nvarchar(max) = N'
 ;with cte as (
   SELECT
-    CASE when age between 12 and 17 then ''12 to 17''
-         when age between 18 and 23 then ''18 to 23''
-         when age between 24 and 44 then ''24 to 44''
-         when age between 45 and 54 then ''45 to 54''
-         when age between 55 and 69 then ''55 to 69''
-         when age >= 70 then ''70+''
-         else ''unknown''
-         END AS [Age]
+    [Race]
   , piv.[Active]	  
   , piv.[Expelled]  
   , piv.[Expired]	  
@@ -26,7 +32,7 @@ declare @sqlquery nvarchar(max) = N'
   from (
     SELECT
       workers.ID
-     ,DATEDIFF(YEAR, Workers.dateOfBirth, GETDATE()) as [Age]
+     ,Lookups_Race.race_EN as [Race]
      ,Lookups_MemberStatus.memberStatus_EN as [MemberStatus]
     FROM
       db_datareader.Lookups_MemberStatus AS Lookups_MemberStatus
@@ -36,8 +42,8 @@ declare @sqlquery nvarchar(max) = N'
         ON Workers.ID = WorkerSignins.WorkerID
       INNER JOIN Persons
         ON Persons.ID = Workers.ID
-      INNER JOIN db_datareader.Lookups_Gender AS Lookups_Gender
-        ON Lookups_Gender.ID = Persons.gender
+      INNER JOIN db_datareader.Lookups_Race AS Lookups_Race
+        ON Lookups_Race.ID = Workers.raceid
     WHERE
       WorkerSignins.dateforsignin >= @beginDate and
       WorkerSignins.dateforsignin <= @endDate	  
@@ -49,14 +55,14 @@ declare @sqlquery nvarchar(max) = N'
 )
 
 select 
-  CAST([Age] AS VARCHAR(20)) AS [Age]
+  CAST([Race] AS VARCHAR(20)) AS [Race]
  ,CAST(SUM([Active])	 AS INT) AS [Active]
  ,CAST(SUM([Expelled])	 AS INT) AS [Expelled]
  ,CAST(SUM([Expired])	 AS INT) AS [Expired]
  ,CAST(SUM([Inactive])	 AS INT) AS [Inactive]
  ,CAST(SUM([Incomplete]) AS INT) AS [Incomplete] 
 from cte
-GROUP BY [Age]
+GROUP BY [Race]
 '
 exec sp_executesql @sqlquery, N'@beginDate datetime, @endDate datetime', @beginDate, @endDate
 
@@ -142,8 +148,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
