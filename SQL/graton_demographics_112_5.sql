@@ -9,21 +9,21 @@
 --                                                                       |
 \******                                             opsCard 2 (tm) ******/
 
---delete from dbo.reportdefinitions where id > 33
---dbcc checkident('reportdefinitions',reseed,33)
+--delete from dbo.reportdefinitions where id > 34
+--dbcc checkident('reportdefinitions',reseed,34)
 --test values
 declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByRacialCategory'
-declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Racial Category'
+declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByIncome'
+declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Income'
 declare @title nvarchar(max) = NULL
-declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by racial category.'
+declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by income.'
 
 declare @sqlquery nvarchar(max) = N'
 ;with cte as (
   SELECT
-    [Race]
+    [Income]
   , piv.[Active]	  
   , piv.[Expelled]  
   , piv.[Expired]	  
@@ -32,7 +32,7 @@ declare @sqlquery nvarchar(max) = N'
   from (
     SELECT
       workers.ID
-     ,Lookups_Race.race_EN as [Race]
+     ,Lookups_Income.income_EN as [Income]
      ,Lookups_MemberStatus.memberStatus_EN as [MemberStatus]
     FROM
       db_datareader.Lookups_MemberStatus AS Lookups_MemberStatus
@@ -42,8 +42,8 @@ declare @sqlquery nvarchar(max) = N'
         ON Workers.ID = WorkerSignins.WorkerID
       INNER JOIN Persons
         ON Persons.ID = Workers.ID
-      INNER JOIN db_datareader.Lookups_Race AS Lookups_Race
-        ON Lookups_Race.ID = Workers.raceid
+      INNER JOIN db_datareader.Lookups_Income AS Lookups_Income
+        ON Lookups_Income.ID = Workers.incomeid
     WHERE
       WorkerSignins.dateforsignin >= @beginDate and
       WorkerSignins.dateforsignin <= @endDate	  
@@ -55,14 +55,14 @@ declare @sqlquery nvarchar(max) = N'
 )
 
 select 
-  CAST([Race] AS VARCHAR(20)) AS [Race]
+  CAST([Income] AS VARCHAR(20)) AS [Income]
  ,CAST(SUM([Active])	 AS INT) AS [Active]
  ,CAST(SUM([Expelled])	 AS INT) AS [Expelled]
  ,CAST(SUM([Expired])	 AS INT) AS [Expired]
  ,CAST(SUM([Inactive])	 AS INT) AS [Inactive]
  ,CAST(SUM([Incomplete]) AS INT) AS [Incomplete] 
 from cte
-GROUP BY [Race]
+GROUP BY [Income]
 '
 exec sp_executesql @sqlquery, N'@beginDate datetime, @endDate datetime', @beginDate, @endDate
 
@@ -76,8 +76,8 @@ declare @inputsJson nvarchar(max) = N'{"beginDate":true,"beginDateDefault":"2016
 declare @columnsJson nvarchar(max)= N'
   [
     {
-      "field": "Race",
-      "header": "Racial Category",
+      "field": "Income",
+      "header": "Income Category",
       "visible": true
     },
     {
@@ -148,8 +148,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
