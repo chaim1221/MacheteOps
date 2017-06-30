@@ -1,4 +1,4 @@
---__________________________________________/ graton_demographics_5.sql \
+--__________________________________________/ graton_demographics_4.sql \
 /****** Script for INSERT INTO command for MACHETE REPORTS (v1.12) ******|
 -- Purpose: To add the Voz Demographics Report to Machete.               |
 -- Author: Chaim Eliyah                                                  |
@@ -9,21 +9,21 @@
 --                                                                       |
 \******                                             opsCard 2 (tm) ******/
 
---delete from dbo.reportdefinitions where id > 34
---dbcc checkident('reportdefinitions',reseed,34)
+--delete from dbo.reportdefinitions where id > 35
+--dbcc checkident('reportdefinitions',reseed,35)
 --test values
 declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByIncome'
-declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Income'
+declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByGenderAndStatus'
+declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Gender and Status'
 declare @title nvarchar(max) = NULL
-declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by income.'
+declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by gender.'
 
 declare @sqlquery nvarchar(max) = N'
 ;with cte as (
   SELECT
-    [Income]
+    [Gender]
   , piv.[Active]	  
   , piv.[Expelled]  
   , piv.[Expired]	  
@@ -32,7 +32,7 @@ declare @sqlquery nvarchar(max) = N'
   from (
     SELECT
       workers.ID
-     ,Lookups_Income.income_EN as [Income]
+     ,Lookups_Gender.gender_EN as [Gender]
      ,Lookups_MemberStatus.memberStatus_EN as [MemberStatus]
     FROM
       db_datareader.Lookups_MemberStatus AS Lookups_MemberStatus
@@ -42,8 +42,8 @@ declare @sqlquery nvarchar(max) = N'
         ON Workers.ID = WorkerSignins.WorkerID
       INNER JOIN Persons
         ON Persons.ID = Workers.ID
-      INNER JOIN db_datareader.Lookups_Income AS Lookups_Income
-        ON Lookups_Income.ID = Workers.incomeid
+      INNER JOIN db_datareader.Lookups_Gender AS Lookups_Gender
+        ON Lookups_Gender.ID = Persons.gender
     WHERE
       WorkerSignins.dateforsignin >= @beginDate and
       WorkerSignins.dateforsignin <= @endDate	  
@@ -55,14 +55,14 @@ declare @sqlquery nvarchar(max) = N'
 )
 
 select 
-  CAST([Income] AS VARCHAR(40)) AS [Income]
+  CAST([Gender] AS VARCHAR(20)) AS [Gender]
  ,CAST(SUM([Active])	 AS INT) AS [Active]
  ,CAST(SUM([Expelled])	 AS INT) AS [Expelled]
  ,CAST(SUM([Expired])	 AS INT) AS [Expired]
  ,CAST(SUM([Inactive])	 AS INT) AS [Inactive]
  ,CAST(SUM([Incomplete]) AS INT) AS [Incomplete] 
 from cte
-GROUP BY [Income]
+GROUP BY [Gender]
 '
 exec sp_executesql @sqlquery, N'@beginDate datetime, @endDate datetime', @beginDate, @endDate
 
@@ -76,8 +76,8 @@ declare @inputsJson nvarchar(max) = N'{"beginDate":true,"beginDateDefault":"2016
 declare @columnsJson nvarchar(max)= N'
   [
     {
-      "field": "Income",
-      "header": "Income Category",
+      "field": "Gender",
+      "header": "Gender",
       "visible": true
     },
     {
@@ -112,8 +112,6 @@ declare @dateCreated datetime = GETDATE()
 declare @dateUpdated datetime = GETDATE()
 declare @Createdby nvarchar(30) = 'Chaim Eliyah'
 declare @Updatedby nvarchar(30) = 'Chaim Eliyah'
-
-
 
 -------------------------------------------------
 BEGIN TRANSACTION

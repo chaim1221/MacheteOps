@@ -1,4 +1,4 @@
---__________________________________________/ graton_demographics_8.sql \
+--__________________________________________/ graton_demographics_6.sql \
 /****** Script for INSERT INTO command for MACHETE REPORTS (v1.12) ******|
 -- Purpose: To add the Voz Demographics Report to Machete.               |
 -- Author: Chaim Eliyah                                                  |
