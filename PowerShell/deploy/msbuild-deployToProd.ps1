@@ -3,7 +3,7 @@
   .SYNOPSIS deploys Machete website
   .DESCRIPTION deployment wrapper for Machete websites incorporating MSBuild and the test.machetessl.org.pubxml file (you do have that, right?)
   .EXAMPLE .\msbuild-deployToProd.ps1 -msBuildLocation "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe" -macheteRepo "c:\git\machete"
-  .INPUTS [string]$msBuildLocation, [string]$macheteRepo
+  .INPUTS [string]$msBuildLocation, [string]$macheteRepo, [string]$centerList
   .OUTPUTS $null
   .NOTES the example given contains the defaults. the script will walk you through how to use it if you mess it up.
   .LINK https://github.com/chaim1221/MacheteOps
@@ -12,7 +12,8 @@
 #>
 param (
   [string]$msBuildLocation = 'msbuild',
-  [string]$macheteRepo = 'c:\git\machete'  
+  [string]$macheteRepo = 'c:\git\machete',
+  [string]$centerList = '.\testCenters.txt'
 )
 
 function pollDirectories([string]$rootDir, [int]$depth) {
