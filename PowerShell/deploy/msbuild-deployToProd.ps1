@@ -12,8 +12,10 @@
 #>
 param (
   [string]$msBuildLocation = 'msbuild',
+  [string]$nugetLocation = 'nuget',
   [string]$macheteRepo = 'c:\git\machete',
-  [string]$centerList = '.\testCenters.txt'
+  [string]$centerList = '.\testCenters.txt',
+  [string]$tagName = $(throw('tagName is required!'))
 )
 
 function pollDirectories([string]$rootDir, [int]$depth) {
@@ -48,6 +50,16 @@ if ($?) {
   } else { throw 'could not find msbuild' }
 }
 
+where.exe $nugetLocation
+if ($?) {
+  write-host "NuGet.exe found." -f Green
+} else {
+  $bestGuess = "C:\Program Files (x86)\NuGet\Visual Studio 2015\nuget.exe"
+  if ([System.IO.File]::Exists($bestGuess)) {
+    $nugetLocation = $bestGuess
+  } else { throw 'could not find nuget.exe' }
+}
+
 if (-not [System.IO.Directory]::Exists($macheteRepo)) {
   push-location
   [string[]]$macheteLocations = @()
@@ -68,7 +80,19 @@ if (-not [System.IO.Directory]::Exists($macheteRepo)) {
   write-host "Machete repository found in $macheteRepo" -f Green
 }
 
+push-location
+set-location $macheteRepo
+git checkout $tagName
+if ($?) { write-host "Success!" -f Green } else { throw "cannot find tag $tagName" }
+git clean -fdx
+& $nugetLocation restore
+if ($?) { write-host "NuGet packages successfully restored." -f Green } else { throw "error at nuget restore" }
+pop-location
+
 $pubxmlPath = join-path -path $macheteRepo -childPath "Machete.Web\Properties\PublishProfiles"
+
+[bool]$existsPubXmlPath = test-path($pubxmlPath)
+if (-not $existsPubXmlPath) { throw "you need to create the test PublishProfile named 'test.machetessl.org.pubxml'; you probably are receiving this error because you expected the file to be checked in. it is now .gitignored." }
 
 push-location
 set-location $pubxmlPath

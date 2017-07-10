@@ -2,9 +2,15 @@
 
 This tool deploys the Release build of Machete to the websites on the cloud VM using the 
 following inputs:
- - msBuildLocation, the location of MSBUILD.EXE on the local machine (defaults to .NET 4.0 location)
+ - msBuildLocation, the location of MSBUILD.EXE on 
+the local machine (defaults to "C:\Program Files 
+(x86)\MSBuild\14.0\Bin\MSBuild.exe")
+ - nugetLocation, the location of NuGet.exe on the 
+local machine (defaults to "C:\Program Files 
+(x86)\NuGet\Visual Studio 2015\NuGet.exe")
  - macheteRepo, the location of the Machete repository on the local machine (defaults to `c:\git\machete`)
  - centerList, the location of the .txt file containing the centers to which you'd like to deploy. 
+ - tagName, the name of the tag to be deployed
 
 Please do not use activeCenters.txt until we develop a better way to test all of the sites 
 before going to production. Deployments are currently done in four phases:
