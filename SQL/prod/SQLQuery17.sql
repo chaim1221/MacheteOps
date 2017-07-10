@@ -108,8 +108,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
@@ -132,8 +132,8 @@ GO
 declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByAgeGroup'
-declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Age Group'
+declare @name nvarchar(max) = N'WorkerSigninsByAgeGroup'
+declare @commonName nvarchar(max) = N'Worker Signins by Age Group'
 declare @title nvarchar(max) = NULL
 declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by age group.'
 
@@ -237,8 +237,6 @@ declare @dateUpdated datetime = GETDATE()
 declare @Createdby nvarchar(30) = 'Chaim Eliyah'
 declare @Updatedby nvarchar(30) = 'Chaim Eliyah'
 
-
-
 -------------------------------------------------
 BEGIN TRANSACTION
 INSERT INTO [dbo].[ReportDefinitions] (
@@ -272,8 +270,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
@@ -295,8 +293,8 @@ GO
 declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByRacialCategory'
-declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Racial Category'
+declare @name nvarchar(max) = N'WorkerSigninsByRacialCategory'
+declare @commonName nvarchar(max) = N'Worker Signins by Racial Category'
 declare @title nvarchar(max) = NULL
 declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by racial category.'
 
@@ -428,8 +426,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
@@ -451,8 +449,8 @@ GO
 declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByIncome'
-declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Income'
+declare @name nvarchar(max) = N'WorkerSigninsByIncome'
+declare @commonName nvarchar(max) = N'Worker Signins by Income'
 declare @title nvarchar(max) = NULL
 declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by income.'
 
@@ -549,8 +547,6 @@ declare @dateUpdated datetime = GETDATE()
 declare @Createdby nvarchar(30) = 'Chaim Eliyah'
 declare @Updatedby nvarchar(30) = 'Chaim Eliyah'
 
-
-
 -------------------------------------------------
 BEGIN TRANSACTION
 INSERT INTO [dbo].[ReportDefinitions] (
@@ -584,8 +580,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
@@ -607,8 +603,8 @@ GO
 declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByGenderAndStatus'
-declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Gender and Status'
+declare @name nvarchar(max) = N'WorkerSigninsByGenderAndStatus'
+declare @commonName nvarchar(max) = N'Worker Signins by Gender and Status'
 declare @title nvarchar(max) = NULL
 declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by gender.'
 
@@ -738,8 +734,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
@@ -761,8 +757,8 @@ GO
 declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'GratonDemographicsWorkerSigninsByGender'
-declare @commonName nvarchar(max) = N'Graton Demographics: Worker Signins by Gender'
+declare @name nvarchar(max) = N'WorkerSigninsByGender'
+declare @commonName nvarchar(max) = N'Worker Signins by Gender'
 declare @title nvarchar(max) = NULL
 declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker signins by gender.'
 
@@ -882,8 +878,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
@@ -905,8 +901,8 @@ GO
 declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'GratonDemographicsEarningsByGender'
-declare @commonName nvarchar(max) = N'Graton Demographics: Worker Earnings by Gender'
+declare @name nvarchar(max) = N'EarningsByGender'
+declare @commonName nvarchar(max) = N'Worker Earnings by Gender'
 declare @title nvarchar(max) = NULL
 declare @description nvarchar(max) = N'Part of a series. For each member status, counts worker earnings by gender.'
 
@@ -964,8 +960,6 @@ declare @dateCreated datetime = GETDATE()
 declare @dateUpdated datetime = GETDATE()
 declare @Createdby nvarchar(30) = 'Chaim Eliyah'
 declare @Updatedby nvarchar(30) = 'Chaim Eliyah'
-
-
 
 -------------------------------------------------
 BEGIN TRANSACTION
