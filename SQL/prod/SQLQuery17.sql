@@ -919,13 +919,19 @@ inner join db_datareader.Lookups_Gender lg on lg.id = p.gender
 where wo.dateTimeofWork >= @beginDate and
  wo.dateTimeofWork <= @endDate
 )
-select gender_EN as [Gender], sum(earned) as [Earned], count(gender_EN) as [Assignment Count] 
+select 
+  CAST(gender_EN AS VARCHAR(10)) as [Gender]
+, cast(convert(decimal(16,2), sum(earned)) as float) as [Earned]
+, CAST(count(gender_EN) AS INT) as [Assignment Count] 
 from earnings 
 group by gender_EN
 
 union all 
 
-select ''Total'' as [Gender], sum(earned) as [Earned], count(*) as [Assignment Count]
+select 
+  CAST(''Total'' AS VARCHAR(10)) as [Gender]
+, CAST(CONVERT(DECIMAL(16,2), sum(earned)) AS FLOAT) as [Earned]
+, CAST(count(*) AS INT) as [Assignment Count]
 from earnings
 '
 exec sp_executesql @sqlquery, N'@beginDate datetime, @endDate datetime', @beginDate, @endDate
@@ -1231,9 +1237,9 @@ declare @beginDate datetime = '2017-01-01'
 declare @endDate datetime = GETDATE()
 
 declare @name nvarchar(max) = N'WorkerSigninsTotalCount'
-declare @commonName nvarchar(max) = N'Worker Signins By Skill'
+declare @commonName nvarchar(max) = N'Worker Signins Total Count'
 declare @title nvarchar(max) = NULL
-declare @description nvarchar(max) = N'Enumerates the skills values from the lookup table. For each, does a count by month of dispatches for that skill. Totals and adds select of how many workers have that skill. Created 5/14/2017'
+declare @description nvarchar(max) = N'Total Counts for Registered Workers, Assigned Workers, Work Assignments and Work Orders'
 
 -- the query. must cast types. NVARCHAR, DECIMAL not accepted!
 declare @sqlquery nvarchar(max) = N'
