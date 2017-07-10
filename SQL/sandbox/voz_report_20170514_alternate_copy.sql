@@ -33,8 +33,8 @@
 --      ,[maxEarnings]
 --  FROM [dbo].[WorkAssignments]
 
-declare @startDate as datetime = '2017-01-01 00:00:00.000'
-declare @endDate as datetime = GETDATE()--'2016-12-31 23:59:59.999'
+declare @beginDate as datetime = '2016-01-01 00:00:00.000'
+declare @endDate as datetime = '2016-12-31 23:59:59.999'
 
 --drop table #tt
 create table #tt
@@ -54,7 +54,7 @@ insert into #tt
   from dbo.workAssignments A
   join dbo.workOrders O on A.workOrderID = O.ID
   join dbo.Lookups L on A.skillID = L.ID
-  where dateTimeOfWork >= @startDate
+  where dateTimeOfWork >= @beginDate
     and dateTimeOfWork <= @endDate
   group by text_EN, skillID, datepart(month,dateTimeOfWork)
   order by datepart(month,dateTimeOfWork)
@@ -143,7 +143,7 @@ from dbo.WorkAssignments A
 join [dbo].[WorkOrders] W on A.workOrderID = W.ID 
 join #lookupsTemp L on A.skillID = L.SkillID
 left join cte on A.skillID = cte.ID
-where dateTimeOfWork >= @startDate
+where dateTimeOfWork >= @beginDate
   and dateTimeOfWork <= @endDate
 group by  L.Skill, A.SkillID, January, February, March, April, May, June, July, August, September, October, November, December, SkillCount
 order by 'Total This Year' desc

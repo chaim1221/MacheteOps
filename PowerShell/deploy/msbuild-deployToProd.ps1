@@ -3,7 +3,7 @@
   .SYNOPSIS deploys Machete website
   .DESCRIPTION deployment wrapper for Machete websites incorporating MSBuild and the test.machetessl.org.pubxml file (you do have that, right?)
   .EXAMPLE .\msbuild-deployToProd.ps1 -msBuildLocation "C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe" -macheteRepo "c:\git\machete"
-  .INPUTS [string]$msBuildLocation, [string]$macheteRepo
+  .INPUTS [string]$msBuildLocation, [string]$macheteRepo, [string]$centerList
   .OUTPUTS $null
   .NOTES the example given contains the defaults. the script will walk you through how to use it if you mess it up.
   .LINK https://github.com/chaim1221/MacheteOps
@@ -12,7 +12,10 @@
 #>
 param (
   [string]$msBuildLocation = 'msbuild',
-  [string]$macheteRepo = 'c:\git\machete'  
+  [string]$nugetLocation = 'nuget',
+  [string]$macheteRepo = 'c:\git\machete',
+  [string]$centerList = '.\testCenters.txt',
+  [string]$tagName = $(throw('tagName is required!'))
 )
 
 function pollDirectories([string]$rootDir, [int]$depth) {
@@ -35,7 +38,7 @@ function pollDirectories([string]$rootDir, [int]$depth) {
 [System.Security.SecureString]$password = read-host -prompt "Enter password" -AsSecureString
 
 [string[]]$activeCenters = @()
-cat activeCenters.txt | % { if ($_) { $activeCenters += $_ } }
+cat $centerList | % { if ($_) { $activeCenters += $_ } }
 
 where.exe $msBuildLocation
 if ($?) {
@@ -45,6 +48,16 @@ if ($?) {
   if ([System.IO.File]::Exists($bestGuess)) {
     $msBuildLocation = $bestGuess
   } else { throw 'could not find msbuild' }
+}
+
+where.exe $nugetLocation
+if ($?) {
+  write-host "NuGet.exe found." -f Green
+} else {
+  $bestGuess = "C:\Program Files (x86)\NuGet\Visual Studio 2015\nuget.exe"
+  if ([System.IO.File]::Exists($bestGuess)) {
+    $nugetLocation = $bestGuess
+  } else { throw 'could not find nuget.exe' }
 }
 
 if (-not [System.IO.Directory]::Exists($macheteRepo)) {
@@ -67,7 +80,20 @@ if (-not [System.IO.Directory]::Exists($macheteRepo)) {
   write-host "Machete repository found in $macheteRepo" -f Green
 }
 
+push-location
+set-location $macheteRepo
+git checkout $tagName
+if ($?) { write-host "Success!" -f Green } else { throw "cannot find tag $tagName" }
+# this would be nice, but it deletes the publish profile...
+# git clean -fdx
+& $nugetLocation restore
+if ($?) { write-host "NuGet packages successfully restored." -f Green } else { throw "error at nuget restore" }
+pop-location
+
 $pubxmlPath = join-path -path $macheteRepo -childPath "Machete.Web\Properties\PublishProfiles"
+
+[bool]$existsPubXmlPath = test-path($pubxmlPath)
+if (-not $existsPubXmlPath) { throw "you need to create the test PublishProfile named 'test.machetessl.org.pubxml'; you probably are receiving this error because you expected the file to be checked in. it is now .gitignored." }
 
 push-location
 set-location $pubxmlPath
