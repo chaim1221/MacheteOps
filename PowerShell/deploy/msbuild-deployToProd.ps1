@@ -36,7 +36,7 @@ function pollDirectories([string]$rootDir, [int]$depth) {
 [System.Security.SecureString]$password = read-host -prompt "Enter password" -AsSecureString
 
 [string[]]$activeCenters = @()
-cat activeCenters.txt | % { if ($_) { $activeCenters += $_ } }
+cat $centerList | % { if ($_) { $activeCenters += $_ } }
 
 where.exe $msBuildLocation
 if ($?) {
