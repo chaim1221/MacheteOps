@@ -7,16 +7,17 @@
 -- databases. This script does that for one report. It can be reused to  |
 -- generate other reports in the same fashion.                           |
 --                                                                       |
+-- NOTE: this was originally the "Voz Demographics Report"               |
 \******                                             opsCard 2 (tm) ******/
 
---delete from dbo.reportdefinitions where id=32
---dbcc checkident('reportdefinitions',reseed,31)
+--delete from dbo.reportdefinitions where id>40
+--dbcc checkident('reportdefinitions',reseed,40)
 -- test values
-declare @beginDate datetime = ''2017-01-01T00:00:00''
+declare @beginDate datetime = '2017-01-01T00:00:00'
 declare @endDate datetime = GETDATE()
 
-declare @name nvarchar(max) = N'VozDemographicsReport'
-declare @commonName nvarchar(max) = N'Voz Demographics Report'
+declare @name nvarchar(max) = N'WorkAssignmentsBySkill'
+declare @commonName nvarchar(max) = N'Work Assignments By Skill'
 declare @title nvarchar(max) = NULL
 declare @description nvarchar(max) = N'Enumerates the skills values from the lookup table. For each, does a count by month of dispatches for that skill. Totals and adds select of how many workers have that skill. Created 5/14/2017'
 
@@ -195,8 +196,6 @@ declare @dateUpdated datetime = GETDATE()
 declare @Createdby nvarchar(30) = 'Chaim Eliyah'
 declare @Updatedby nvarchar(30) = 'Chaim Eliyah'
 
-
-
 -------------------------------------------------
 BEGIN TRANSACTION
 INSERT INTO [dbo].[ReportDefinitions] (
@@ -230,8 +229,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name

@@ -103,8 +103,6 @@ declare @dateUpdated datetime = GETDATE()
 declare @Createdby nvarchar(30) = 'Chaim Eliyah'
 declare @Updatedby nvarchar(30) = 'Chaim Eliyah'
 
-
-
 -------------------------------------------------
 BEGIN TRANSACTION
 INSERT INTO [dbo].[ReportDefinitions] (
