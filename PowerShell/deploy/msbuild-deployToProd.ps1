@@ -84,7 +84,8 @@ push-location
 set-location $macheteRepo
 git checkout $tagName
 if ($?) { write-host "Success!" -f Green } else { throw "cannot find tag $tagName" }
-git clean -fdx
+# this would be nice, but it deletes the publish profile...
+# git clean -fdx
 & $nugetLocation restore
 if ($?) { write-host "NuGet packages successfully restored." -f Green } else { throw "error at nuget restore" }
 pop-location
