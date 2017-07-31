@@ -24,9 +24,9 @@ declare @description nvarchar(max) = 'Finds workers with a raceid, incomeid or d
 declare @sqlquery nvarchar(max) = N'
   select 
     distinct(CAST(w.dwccardnum AS INT)) as [Member ID]
-  , CAST(raceid AS INT) as [Race ID]
-  , CAST(incomeid AS INT) as [Income ID]
-  , CAST(dateOfBirth as DATETIME) as [Date of Birth]
+  , CAST(raceid AS VARCHAR(4)) as [Race ID]
+  , CAST(incomeid AS VARCHAR(4)) as [Income ID]
+  , CAST(dateOfBirth as VARCHAR(12)) as [Date of Birth]
   from workers w
   inner join workersignins wsi on w.id = wsi.workerid
   where wsi.dateforsignin >=  @beginDate and
@@ -108,8 +108,8 @@ VALUES (
       ,@Createdby
       ,@Updatedby
 )
-ROLLBACK TRANSACTION
---COMMIT TRANSACTION
+--ROLLBACK TRANSACTION
+COMMIT TRANSACTION
 --GO
 
 SELECT * FROM [dbo].[ReportDefinitions] WHERE [name] = @name
