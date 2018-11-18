@@ -1,2 +1,0 @@
-graton-test
-voz-test
